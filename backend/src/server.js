@@ -4,16 +4,17 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import path from "path";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { connectDB } from "./lib/db.js";
 import { ENV } from "./lib/env.js";
-
 
 dotenv.config();
 const app = express();
 const __dirname = path.resolve();
 const PORT = ENV.PORT;
-app.use(express.json());//req.body
-app.use(cookieParser());//req.cookie
+app.use(express.json()); //req.body
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+app.use(cookieParser()); //req.cookie
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
