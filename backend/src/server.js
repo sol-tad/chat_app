@@ -21,13 +21,11 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// Serve frontend in production
+// make read for deployment
 if (ENV.NODE_ENV === "production") {
-  // Serve static files
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // SPA fallback for React/Vite routing
-  app.get("/*", (_, res) => {
+  app.use((_, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
