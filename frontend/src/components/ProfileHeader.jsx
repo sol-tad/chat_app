@@ -6,7 +6,7 @@ import { useChatStore } from "../store/useChatStore";
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
 function ProfileHeader() {
-  const { logout, authUser, updateProfile } = useAuthStore();
+  const { logout, authUser, updateProfile, onlineUsers } = useAuthStore();
   const { isSoundEnabled, toggleSound } = useChatStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
@@ -26,25 +26,34 @@ function ProfileHeader() {
     };
   };
 
+  const isOnline = onlineUsers?.includes(authUser._id);
+
   return (
     <div className="p-6 border-b border-slate-700/50">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* AVATAR */}
-          <div className="avatar online">
+          <div className="relative w-14 h-14">
             <button
-              className="size-14 rounded-full overflow-hidden relative group"
+              className="w-full h-full rounded-full overflow-hidden relative group"
               onClick={() => fileInputRef.current.click()}
             >
               <img
                 src={selectedImg || authUser.profilePic || "/avatar.png"}
                 alt="User image"
-                className="size-full object-cover"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs">Change</span>
               </div>
             </button>
+
+            {/* Online/Offline Indicator */}
+            <span
+              className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#1e293b] ${
+                isOnline ? "bg-green-500" : "bg-gray-500"
+              }`}
+            ></span>
 
             <input
               type="file"
@@ -55,13 +64,14 @@ function ProfileHeader() {
             />
           </div>
 
-          {/* USERNAME & ONLINE TEXT */}
+          {/* USERNAME & STATUS */}
           <div>
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
               {authUser.fullName}
             </h3>
-
-            <p className="text-slate-400 text-xs">Online</p>
+            <p className="text-slate-400 text-xs">
+              {isOnline ? "Online" : "Offline"}
+            </p>
           </div>
         </div>
 
@@ -79,8 +89,7 @@ function ProfileHeader() {
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
             onClick={() => {
-              // play click sound before toggling
-              mouseClickSound.currentTime = 0; // reset to start
+              mouseClickSound.currentTime = 0;
               mouseClickSound
                 .play()
                 .catch((error) => console.log("Audio play failed:", error));
@@ -98,4 +107,5 @@ function ProfileHeader() {
     </div>
   );
 }
+
 export default ProfileHeader;
